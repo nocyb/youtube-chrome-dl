@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube Downloader</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header">
+      <svg class="logo" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+        <path d="M21.8 8s-.2-1.4-.8-2C20.2 5.2 19.3 5.2 19 5.1 16 4.9 12 4.9 12 4.9s-4 0-7 .2c-.4 0-1.2.1-2 .9-.6.6-.8 2-.8 2S2 9.6 2 11.2v1.5c0 1.6.2 3.2.2 3.2s.2 1.4.8 2c.8.8 1.8.8 2.2.9 1.6.1 6.8.2 6.8.2s4 0 7-.2c.4 0 1.2-.1 2-.9.6-.6.8-2 .8-2s.2-1.6.2-3.2v-1.5c0-1.6-.2-3.2-.2-3.2zM10 15.5V8.5l5.2 3.5-5.2 3.5z"/>
+      </svg>
+      <h1>YT Downloader</h1>
+    </header>
+
+    <!-- Loading State -->
+    <div id="loading" class="state-card">
+      <div class="spinner"></div>
+      <p>Fetching video info&hellip;</p>
+    </div>
+
+    <!-- Error State -->
+    <div id="error" class="state-card hidden">
+      <svg class="icon-error" viewBox="0 0 24 24" width="32" height="32" fill="currentColor">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/>
+      </svg>
+      <p id="error-msg">Not a YouTube video page.</p>
+      <button id="retry-btn" class="btn btn-sm">Retry</button>
+    </div>
+
+    <!-- Main Content -->
+    <div id="main" class="hidden">
+      <!-- Video Info -->
+      <div class="video-info">
+        <img id="thumbnail" class="thumbnail" alt="Thumbnail" />
+        <div class="video-meta">
+          <p id="video-title" class="video-title">Video Title</p>
+          <p id="video-duration" class="video-duration"></p>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Video Download Section -->
+      <section class="download-section">
+        <div class="section-header">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+          </svg>
+          <span>Video (MP4)</span>
+        </div>
+        <div class="control-row">
+          <select id="video-quality" class="select">
+            <option value="1080">1080p</option>
+            <option value="720" selected>720p</option>
+            <option value="480">480p</option>
+            <option value="360">360p</option>
+          </select>
+          <button id="download-mp4" class="btn btn-primary">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+            Download MP4
+          </button>
+        </div>
+        <p id="video-size" class="size-hint"></p>
+      </section>
+
+      <div class="divider"></div>
+
+      <!-- Audio Download Section -->
+      <section class="download-section">
+        <div class="section-header">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+          </svg>
+          <span>Audio (M4A/AAC)</span>
+        </div>
+        <div class="control-row">
+          <select id="audio-quality" class="select">
+            <option value="320">320 kbps</option>
+            <option value="192">192 kbps</option>
+            <option value="128" selected>128 kbps</option>
+          </select>
+          <button id="download-audio" class="btn btn-accent">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+            </svg>
+            Download Audio
+          </button>
+        </div>
+        <p id="audio-size" class="size-hint"></p>
+      </section>
+
+      <!-- 1080p Notice -->
+      <div id="mux-notice" class="notice hidden">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+        </svg>
+        <span>1080p requires muxing separate video+audio streams. This may take a moment.</span>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div id="progress-container" class="progress-container hidden">
+      <div class="progress-info">
+        <span id="progress-label">Downloading&hellip;</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div id="status" class="status"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span>v1.0.0</span>
+      <span>&middot;</span>
+      <span>Manifest V3</span>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
