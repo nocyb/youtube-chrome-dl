@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Sandbox</title>
+</head>
+<body>
+  <!--
+    sandbox.html — Sandboxed page that CAN use eval().
+
+    Chrome Manifest V3 forbids eval() in extension pages, but sandboxed
+    pages (listed under the "sandbox" key in manifest.json) are exempt.
+
+    This page receives extracted YouTube cipher/n-transform function code
+    from the offscreen document, evaluates it safely in this isolated
+    context, and returns the results via postMessage.
+  -->
+  <script src="sandbox.js"></script>
+</body>
+</html>

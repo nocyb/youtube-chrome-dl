@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Offscreen</title>
+</head>
+<body>
+  <!--
+    offscreen.html — Offscreen document (MV3).
+
+    Acts as an intermediary between the background service worker and
+    the sandboxed iframe. Also handles stream muxing for 1080p downloads.
+
+    The service worker cannot host iframes, so this offscreen document
+    embeds sandbox.html and relays messages.
+  -->
+  <iframe id="sandbox" src="sandbox.html" style="display:none"></iframe>
+  <script src="offscreen.js"></script>
+</body>
+</html>
